@@ -1,6 +1,6 @@
 // SolarCharge service worker — ścieżki liczone względem zakresu (scope),
 // więc działa zarówno pod /solarcharge/ na GitHub Pages, jak i lokalnie.
-const CACHE = 'solarcharge-v2';
+const CACHE = 'solarcharge-v3';
 const SCOPE = self.registration.scope;
 const url = p => new URL(p, SCOPE).href;
 const ASSETS = ['./', './index.html', './manifest.json', './icons/icon-192.png', './icons/icon-512.png', './icons/apple-touch-icon.png'].map(url);
@@ -11,9 +11,10 @@ self.addEventListener('install', e => {
 });
 
 self.addEventListener('activate', e => {
+  // usuwamy tylko stare wersje własnego cache — nie ruszamy innych stron z kubaosmola-dev.github.io
   e.waitUntil(
     caches.keys()
-      .then(keys => Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k))))
+      .then(keys => Promise.all(keys.filter(k => k.startsWith('solarcharge-') && k !== CACHE).map(k => caches.delete(k))))
       .then(() => self.clients.claim())
   );
 });
@@ -28,7 +29,7 @@ self.addEventListener('fetch', e => {
     e.respondWith(
       fetch(req)
         .then(res => {
-          if (res.ok) caches.open(CACHE).then(c => c.put(url('./index.html'), res.clone()));
+          if (res.ok) { const copy = res.clone(); caches.open(CACHE).then(c => c.put(url('./index.html'), copy)); }
           return res;
         })
         .catch(() => caches.match(url('./index.html')).then(r => r || caches.match(url('./'))))
@@ -41,7 +42,7 @@ self.addEventListener('fetch', e => {
     caches.match(req).then(cached => {
       const net = fetch(req)
         .then(res => {
-          if (res.ok) caches.open(CACHE).then(c => c.put(req, res.clone()));
+          if (res.ok) { const copy = res.clone(); caches.open(CACHE).then(c => c.put(req, copy)); }
           return res;
         })
         .catch(() => cached);

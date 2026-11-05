@@ -23,6 +23,7 @@
   --green:#39ff7a;--gdim:#1a5c32;--amber:#ffb830;--red:#ff6161;--blue:#4fc3f7;
   --text:#d4e8d4;--muted:#6f8f6f;
   --st:env(safe-area-inset-top);--sb:env(safe-area-inset-bottom);
+  --gl:max(16px,env(safe-area-inset-left));--gr:max(16px,env(safe-area-inset-right));
 }
 html,body{height:100%}
 body{font-family:'DM Mono',ui-monospace,Menlo,Consolas,monospace;background:var(--bg);color:var(--text);
@@ -33,21 +34,21 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;
 b{font-weight:500;color:#fff}
 
 /* header */
-.hdr{position:relative;z-index:2;padding:calc(var(--st) + 12px) 16px 10px;display:flex;align-items:center;justify-content:space-between;
+.hdr{position:relative;z-index:2;padding:calc(var(--st) + 12px) var(--gr) 10px var(--gl);display:flex;align-items:center;justify-content:space-between;
   border-bottom:1px solid var(--line);background:rgba(10,15,10,.9);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
 .app-name{font-family:'Syne',sans-serif;font-weight:800;font-size:21px;color:var(--green);letter-spacing:-.5px}
 .app-sub{font-size:9px;letter-spacing:2px;color:var(--muted);margin-top:2px}
 .seg{display:flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;flex-shrink:0}
 .seg button{background:none;border:0;color:var(--muted);font:inherit;font-size:11px;letter-spacing:1px;padding:7px 12px;cursor:pointer}
 .seg button.on{background:var(--green);color:#03220f;font-weight:500}
-.pills{position:relative;display:flex;gap:6px;align-items:center;padding:8px 16px;flex-wrap:wrap}
+.pills{position:relative;display:flex;gap:6px;align-items:center;padding:8px var(--gr) 8px var(--gl);flex-wrap:wrap}
 .pill{font-size:9px;letter-spacing:1px;padding:4px 8px;border-radius:999px;border:1px solid var(--line);color:var(--muted);display:inline-flex;align-items:center;gap:5px}
 .pill i{width:6px;height:6px;border-radius:50%;background:var(--muted)}
 .pill.ok{color:var(--text)} .pill.ok i{background:var(--green);box-shadow:0 0 6px var(--green)}
 .pill.warn i{background:var(--amber)} .pill.err{color:var(--red)} .pill.err i{background:var(--red)}
 .upd{margin-left:auto;font-size:9px;color:var(--muted)}
 
-main{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 16px 24px;position:relative}
+main{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 var(--gr) 24px var(--gl);position:relative}
 .view{display:none;max-width:560px;margin:0 auto}
 .view.on{display:block}
 .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;margin-top:12px}
@@ -130,7 +131,7 @@ input[type=range]{width:100%;accent-color:var(--green)}
 .foot{font-size:9px;color:var(--muted);text-align:center;margin:18px 0 6px;letter-spacing:1px}
 
 /* nav */
-nav{position:relative;z-index:2;display:flex;border-top:1px solid var(--line);background:rgba(10,15,10,.96);padding-bottom:var(--sb)}
+nav{position:relative;z-index:2;display:flex;border-top:1px solid var(--line);background:rgba(10,15,10,.96);padding:0 env(safe-area-inset-right) var(--sb) env(safe-area-inset-left)}
 nav button{flex:1;background:none;border:0;color:var(--muted);font:inherit;font-size:10px;letter-spacing:1px;padding:10px 0 8px;
   display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer}
 nav button .ni{font-size:18px;filter:grayscale(1);opacity:.7}
@@ -203,7 +204,7 @@ nav button.on{color:var(--green)} nav button.on .ni{filter:none;opacity:1}
       <div class="rec-top"><span id="recIco">🟢</span><h2 id="recH">…</h2></div>
       <p id="recBody"></p>
       <button class="btn k" id="recBtn">…</button>
-      <label class="tg"><span>Automatyka — sama startuje, dopasowuje prąd do nadwyżki i zatrzymuje ładowanie</span><input type="checkbox" id="autoMode"></label>
+      <label class="tg"><span>Automatyka — sama startuje, dopasowuje prąd do nadwyżki i zatrzymuje ładowanie. Działa, gdy aplikacja jest otwarta; limit w aucie ustawia na cel.</span><input type="checkbox" id="autoMode"></label>
       <div class="auto-info" id="autoInfo"></div>
     </div>
   </section>
@@ -239,17 +240,17 @@ nav button.on{color:var(--green)} nav button.on .ni{filter:none;opacity:1}
       <div class="rng"><div class="row"><span>Maks. prąd ładowania (3 fazy)</span><b><span id="oAmps">16</span> A · <span id="oAmpsKw">11.0</span> kW</b></div>
         <input type="range" id="iAmps" min="5" max="16" step="1"></div>
       <label class="tg"><span>Magazyn domowy ma pierwszeństwo — Tesla dostaje dopiero to, czego magazyn nie przyjmie</span><input type="checkbox" id="iBattFirst"></label>
-      <div class="fld" style="margin-top:10px"><label>MOC ŁADOWANIA MAGAZYNU (kW)</label><input type="number" id="iBattKw" step="0.5" min="0" inputmode="decimal"></div>
+      <div class="fld" style="margin-top:10px"><label>MOC ŁADOWANIA MAGAZYNU (kW)</label><input type="text" id="iBattKw" step="0.5" min="0" inputmode="decimal"></div>
       <p class="note">Minimum Tesli to 5 A × 3 fazy ≈ 3,5 kW — poniżej tego auto nie ładuje z trzech faz.</p>
     </div>
 
     <div class="card">
       <div class="card-h"><span>INSTALACJA</span></div>
       <div class="grid2">
-        <div class="fld"><label>SZCZYT PV (kW)</label><input type="number" id="iPeak" step="0.5" min="1" inputmode="decimal"></div>
-        <div class="fld"><label>ŚREDNIO DOM (kW)</label><input type="number" id="iHome" step="0.1" min="0" inputmode="decimal"></div>
-        <div class="fld"><label>SZER. GEOGR.</label><input type="number" id="iLat" step="0.01" inputmode="decimal"></div>
-        <div class="fld"><label>DŁ. GEOGR.</label><input type="number" id="iLon" step="0.01" inputmode="decimal"></div>
+        <div class="fld"><label>SZCZYT PV (kW)</label><input type="text" id="iPeak" step="0.5" min="1" inputmode="decimal"></div>
+        <div class="fld"><label>ŚREDNIO DOM (kW)</label><input type="text" id="iHome" step="0.1" min="0" inputmode="decimal"></div>
+        <div class="fld"><label>SZER. GEOGR.</label><input type="text" id="iLat" step="0.01" inputmode="decimal"></div>
+        <div class="fld"><label>DŁ. GEOGR.</label><input type="text" id="iLon" step="0.01" inputmode="decimal"></div>
       </div>
       <button class="btn k sm" id="geoBtn">📍 Użyj mojej lokalizacji</button>
       <p class="note">Prognoza z Open-Meteo (bez klucza). Lokalizacja służy tylko do prognozy nasłonecznienia.</p>
@@ -263,7 +264,7 @@ nav button.on{color:var(--green)} nav button.on .ni{filter:none;opacity:1}
         <div class="fld"><label>APP SECRET</label><input type="password" id="sSecret" autocomplete="off"></div>
       </div>
       <div class="fld"><label>E-MAIL KONTA SOLARMAN</label><input type="email" id="sEmail" autocomplete="username"></div>
-      <div class="fld"><label>HASŁO (zapisywany jest tylko skrót SHA-256)</label><input type="password" id="sPass" autocomplete="current-password"></div>
+      <div class="fld"><label>HASŁO (zapisywany jest jego skrót SHA-256 — chroń go jak hasło)</label><input type="password" id="sPass" autocomplete="current-password"></div>
       <div class="fld"><label>STATION ID (puste = pierwsza instalacja z konta)</label><input type="text" id="sStation" inputmode="numeric" autocomplete="off"></div>
       <button class="btn g sm" id="saveSolar">Zapisz i połącz</button>
       <div class="err" id="solarErr"></div>
@@ -334,12 +335,13 @@ let S = load();
 
 // Stan bieżący (moce w kW)
 const L = { pv: 0, home: S.homeAvg, battSoc: 65, battKw: 0, grid: 0,
-            tSoc: 62, carLimit: null, tState: 'Stopped', tKw: 0, tAmps: 0, tRange: 62 * KM_PER_PCT, plugged: true, ts: 0 };
+            tSoc: 62, carLimit: null, tState: 'Stopped', tKw: 0, tAmps: 0, tRange: 62 * KM_PER_PCT, plugged: true, ts: 0, tTs: 0 };
 
 let fc = null;             // prognoza: {src, day, fetched, rad:[[24],[24]]}
 let planDay = 0, lowCount = 0, lastCmd = 0, cmdBlockedUntil = 0, lastNotify = 0;
 let simTimer = null, solarTimer = null, teslaTimer = null;
 
+const netErr = () => new Error(navigator.onLine === false ? 'brak internetu' : 'połączenie zablokowane (najpewniej CORS) — potrzebny serwer pośredniczący');
 function toast(m) { const t = $('toast'); t.textContent = m; t.classList.add('on'); clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.remove('on'), 3600); }
 function setPill(id, cls, txt) { const p = $(id); p.className = 'pill ' + (cls || ''); if (txt) p.querySelector('span').textContent = txt; }
 
@@ -385,9 +387,13 @@ async function loadForecast(force) {
 
 // ── Logika nadwyżki ──
 const startKw = () => Math.max(S.minSurplus, 5 * KW_PER_A);
+const isCharging = () => L.tState === 'Charging' || L.tState === 'Starting';
+let battFull = true;
 function available() {                    // kW, które Tesla może wziąć bez sieci i bez rozładowania magazynu
+  // histereza 97/99 %, żeby 5 kW magazynu nie przeskakiwało tam i z powrotem
+  if (L.battSoc == null || L.battSoc >= 99) battFull = true; else if (L.battSoc < 97) battFull = false;
   let a = L.pv - L.home;
-  if (S.battFirst && L.battSoc != null && L.battSoc < 99 && a > 0) a = Math.max(0, a - S.battMaxKw);
+  if (S.battFirst && !battFull && a > 0) a = Math.max(0, a - S.battMaxKw);
   return a;
 }
 function windows(day) {
@@ -409,6 +415,7 @@ function nextWindow() {
 // ── Symulacja (1 tik = 3 s = 1 min stanu baterii) ──
 function simTick() {
   const dt = 1 / 60;
+  if (L.tState === 'Complete' && L.tSoc < S.target) L.tState = 'Stopped';   // cel podniesiony po naładowaniu
   L.pv = Math.max(0, pvAt(new Date()) * (0.9 + Math.random() * 0.12));
   L.home = S.homeAvg * (0.75 + Math.random() * 0.5);
   if (L.tState === 'Charging') {
@@ -421,7 +428,7 @@ function simTick() {
                       : (L.battSoc > 10 ? -Math.min(S.battMaxKw, -rest) : 0);   // magazyn nie schodzi poniżej 10 %
   L.battSoc = clamp(L.battSoc + L.battKw * dt / SIM_HOME_BATT_KWH * 100, 10, 100);
   L.grid = L.home + L.tKw + L.battKw - L.pv;
-  L.tRange = L.tSoc * KM_PER_PCT; L.plugged = true; L.ts = Date.now();
+  L.tRange = L.tSoc * KM_PER_PCT; L.plugged = true; L.ts = L.tTs = Date.now();
   autoStep(); render();
 }
 
@@ -429,14 +436,22 @@ function simTick() {
 function autoStep() {
   const info = $('autoInfo');
   if (!S.auto) { info.textContent = ''; return; }
-  const a = available(), charging = L.tState === 'Charging';
+  const hhmm = t => new Date(t).toLocaleTimeString('pl-PL', { hour: '2-digit', minute: '2-digit' });
+  if (S.mode === 'live') {
+    const now = Date.now();
+    if (!L.ts || !L.tTs || now - L.ts > 15 * 60e3 || now - L.tTs > 12 * 60e3) { info.textContent = '⚙︎ Czekam na świeże dane z Solarman i Tesli…'; return; }
+    if (L.ts <= lastCmd) { info.textContent = '⚙︎ Czekam, aż Solarman pokaże efekt ostatniej zmiany…'; return; }
+    if (cmdBusy) return;
+  }
+  const a = available(), charging = isCharging();
   let msg;
   if (!L.plugged) msg = 'Auto niepodłączone';
   else if (L.tSoc >= S.target) { if (charging) chargeCmd('stop', 'cel osiągnięty'); msg = 'Cel ' + S.target + '% osiągnięty'; }
+  else if (Date.now() < cmdBlockedUntil) msg = 'Pauza po błędzie komendy — ponowię o ' + hhmm(cmdBlockedUntil);
   else {
-    const amps = clamp(Math.floor(a / KW_PER_A), 5, S.maxAmps);
+    const want = clamp(Math.floor(a / KW_PER_A), 5, S.maxAmps);
     if (!charging) {
-      if (a >= startKw()) { lowCount = 0; chargeCmd('start', null, amps); msg = `Start: ${amps} A`; }
+      if (a >= startKw()) { lowCount = 0; chargeCmd('start', null, want); msg = `Start: ${want} A`; }
       else msg = `Czekam na nadwyżkę ≥ ${f1(startKw())} kW`;
     } else if (a < 5 * KW_PER_A - 1) {
       lowCount++;
@@ -444,13 +459,14 @@ function autoStep() {
       else { if (L.tAmps !== 5) chargeCmd('amps', null, 5); msg = `Mało słońca, minimum 5 A (${lowCount}/3)`; }
     } else {
       lowCount = 0;
-      if (amps !== L.tAmps) chargeCmd('amps', null, amps);
-      msg = `Ładuje ${amps} A ≈ ${f1(amps * KW_PER_A)} kW ze słońca`;
+      if (Math.abs(want - L.tAmps) >= 2) chargeCmd('amps', null, want);   // strefa martwa ±1 A
+      msg = `Ładuje ${L.tAmps} A ≈ ${f1(L.tAmps * KW_PER_A)} kW ze słońca`;
     }
   }
   info.textContent = '⚙︎ ' + msg;
 }
 
+let cmdBusy = false, cmdFails = 0;
 async function chargeCmd(kind, reason, amps) {
   if (S.mode === 'sim') {
     if (kind === 'start') { L.tState = 'Charging'; L.tAmps = amps || S.maxAmps; L.tKw = L.tAmps * KW_PER_A; }
@@ -460,22 +476,32 @@ async function chargeCmd(kind, reason, amps) {
     if (kind === 'stop') toast('⏸ Ładowanie zatrzymane' + (reason ? ' — ' + reason : ''));
     render(); return true;
   }
-  if (Date.now() < cmdBlockedUntil) return false;
+  if (cmdBusy || Date.now() < cmdBlockedUntil) return false;
   if (kind === 'amps' && Date.now() - lastCmd < 120e3) return false;   // nie zmieniaj prądu częściej niż co 2 min
-  lastCmd = Date.now();
+  cmdBusy = true; lastCmd = Date.now();
   const v = `/api/1/vehicles/${encodeURIComponent(S.tesla.vin)}/command/`;
+  const okIf = re => e => { if (!re.test(e.message)) throw e; };          // "już ustawione" to nie błąd
   try {
-    if (kind === 'start' || kind === 'amps') { await tesla(v + 'set_charging_amps', { method: 'POST', body: JSON.stringify({ charging_amps: amps }) }); L.tAmps = amps; }
-    if (kind === 'start') { await tesla(v + 'charge_start', { method: 'POST' }); L.tState = 'Charging'; toast(`⚡ Tesla: start ${amps} A`); }
-    if (kind === 'stop') { await tesla(v + 'charge_stop', { method: 'POST' }); L.tState = 'Stopped'; L.tKw = 0; toast('⏸ Tesla: stop' + (reason ? ' — ' + reason : '')); }
-    $('teslaErr').textContent = '';
-    setTimeout(teslaPoll, 15e3);
-    render(); return true;
+    if (kind === 'start') {
+      // limit w aucie = cel — auto zatrzyma się samo, nawet gdy iPhone uśpi aplikację
+      await tesla(v + 'set_charge_limit', { method: 'POST', body: JSON.stringify({ percent: S.target }) }).catch(okIf(/already_set/i));
+      L.carLimit = S.target;
+    }
+    if (kind === 'start' || kind === 'amps') {
+      await tesla(v + 'set_charging_amps', { method: 'POST', body: JSON.stringify({ charging_amps: amps }) });
+      L.tAmps = amps; L.tKw = amps * KW_PER_A;
+    }
+    if (kind === 'start') { await tesla(v + 'charge_start', { method: 'POST' }).catch(okIf(/is_charging|complete/i)); L.tState = 'Starting'; toast(`⚡ Tesla: start ${amps} A`); }
+    if (kind === 'stop') { await tesla(v + 'charge_stop', { method: 'POST' }).catch(okIf(/not_charging/i)); L.tState = 'Stopped'; L.tKw = 0; toast('⏸ Tesla: stop' + (reason ? ' — ' + reason : '')); }
+    cmdFails = 0; $('teslaErr').textContent = '';
+    setTimeout(teslaPoll, 20e3);
+    return true;
   } catch (e) {
-    cmdBlockedUntil = Date.now() + 5 * 60e3;
+    cmdFails++;                                   // 5, 10, 20, 40… min przerwy — komendy Fleet API są płatne
+    cmdBlockedUntil = Date.now() + Math.min(120, 5 * 2 ** (cmdFails - 1)) * 60e3;
     $('teslaErr').textContent = 'Komenda: ' + e.message;
     setPill('pillTesla', 'err', 'TESLA'); toast('❌ Tesla: ' + e.message); return false;
-  }
+  } finally { cmdBusy = false; render(); }
 }
 
 // ── Tesla Fleet API ──
@@ -483,9 +509,9 @@ async function tesla(path, opt = {}) {
   if (!S.tesla.token || !S.tesla.vin) throw new Error('brak tokenu lub VIN-u');
   let r;
   try { r = await fetch(S.tesla.url.replace(/\/+$/, '') + path, { ...opt, headers: { 'Authorization': 'Bearer ' + S.tesla.token, 'Content-Type': 'application/json' } }); }
-  catch (e) { throw new Error('przeglądarka zablokowała połączenie (CORS) — potrzebny serwer pośredniczący'); }
+  catch (e) { throw netErr(); }
   if (r.status === 408) throw new Error('auto śpi — obudź je w aplikacji Tesla');
-  if (r.status === 401) throw new Error('token wygasł lub jest błędny');
+  if (r.status === 401) throw new Error('token wygasł (ważny ok. 8 h) lub jest błędny — wklej nowy');
   const j = await r.json().catch(() => ({}));
   const msg = String(j.error || j.error_description || (j.response && j.response.reason) || '');
   if (/command protocol/i.test(msg)) throw new Error('Model Y wymaga podpisanych komend — wpisz adres proxy Tesli (tesla-http-proxy) w „Adres API”');
@@ -497,15 +523,19 @@ async function tesla(path, opt = {}) {
 async function teslaPoll() {
   if (S.mode !== 'live') return;
   if (!S.tesla.token || !S.tesla.vin) { setPill('pillTesla', 'warn', 'TESLA ?'); return; }
+  const t0 = Date.now();
   try {
     const r = await tesla(`/api/1/vehicles/${encodeURIComponent(S.tesla.vin)}/vehicle_data?endpoints=charge_state`);
+    if (lastCmd > t0) return;                     // w międzyczasie poszła komenda — ten odczyt jest nieaktualny
     const c = r.charge_state || {};
     if (c.battery_level != null) L.tSoc = c.battery_level;
     L.carLimit = c.charge_limit_soc ?? null;
     L.tState = c.charging_state || 'Stopped';
     L.plugged = L.tState !== 'Disconnected';
-    L.tKw = L.tState === 'Charging' ? (c.charger_power || 0) : 0;
+    // charger_power to pełne kW — dokładniej z faktycznego prądu (instalacja 3-fazowa)
+    L.tKw = isCharging() ? (c.charger_actual_current > 0 ? c.charger_actual_current * KW_PER_A : (c.charger_power || 0)) : 0;
     L.tAmps = c.charge_current_request ?? c.charger_actual_current ?? L.tAmps;
+    L.tTs = Date.now();
     L.tRange = c.battery_range != null ? c.battery_range * 1.609 : L.tSoc * KM_PER_PCT;
     setPill('pillTesla', 'ok', 'TESLA'); $('teslaErr').textContent = '';
   } catch (e) { setPill('pillTesla', 'err', 'TESLA'); $('teslaErr').textContent = e.message; }
@@ -520,7 +550,7 @@ async function sha256(s) {
 }
 async function smFetch(url, opt) {
   try { return await fetch(url, opt); }
-  catch (e) { throw new Error('przeglądarka zablokowała połączenie (CORS) — potrzebny serwer pośredniczący'); }
+  catch (e) { throw netErr(); }
 }
 async function sm(path, body) {
   const base = S.solar.url.replace(/\/+$/, '');
@@ -555,7 +585,7 @@ async function solarPoll() {
     const pv = W(d.generationPower);
     if (pv == null) throw new Error('API nie zwróciło mocy PV');
     const use = W(d.usePower), chg = W(d.chargePower), dis = W(d.dischargePower);
-    const teslaNow = L.tState === 'Charging' ? L.tKw : 0;
+    const teslaNow = isCharging() ? L.tKw : 0;
     L.pv = pv;
     L.home = Math.max(0, (use ?? S.homeAvg) - teslaNow);    // zużycie domu bez Tesli
     L.battSoc = d.batterySoc != null ? +d.batterySoc : null;
@@ -583,7 +613,9 @@ function setMode(m) {
     simTick(); simTimer = setInterval(simTick, 3000);
   } else {
     setPill('pillSolar', 'warn', 'SOLARMAN…'); setPill('pillTesla', 'warn', 'TESLA…');
-    L.pv = 0; L.home = 0; L.battSoc = null; L.battKw = 0; L.grid = 0; L.tKw = 0; L.ts = 0;
+    L.pv = 0; L.home = 0; L.battSoc = null; L.battKw = 0; L.grid = 0; L.ts = 0;
+    L.tState = 'Unknown'; L.tKw = 0; L.tTs = 0; L.carLimit = null; L.plugged = true;
+    lastCmd = 0; cmdFails = 0; cmdBlockedUntil = 0;
     render();
     solarPoll(); teslaPoll();
     solarTimer = setInterval(solarPoll, 120e3);     // logger Solarman i tak wysyła dane co kilka minut
@@ -595,7 +627,7 @@ function setMode(m) {
 // ── Powiadomienia ──
 function maybeNotify() {
   if (!('Notification' in window) || Notification.permission !== 'granted') return;
-  if (S.auto || L.tState === 'Charging' || L.tSoc >= S.target || !L.plugged) return;
+  if (S.auto || isCharging() || !L.tTs || L.tSoc >= S.target || !L.plugged) return;
   const a = available();
   if (a < startKw() || Date.now() - lastNotify < 30 * 60e3) return;
   lastNotify = Date.now();
@@ -622,22 +654,24 @@ function render() {
   sv.className = 'big ' + (a >= sk ? 'c-green' : a > 0 ? 'c-sun' : 'c-red');
   const p = Math.min(Math.max(a, 0), S.maxAmps * KW_PER_A), amps = Math.floor(p / KW_PER_A);
   $('surplusSub').textContent = live && !L.ts ? 'czekam na dane z Solarman…'
-    : a < 5 * KW_PER_A ? `za mało na start — Tesla potrzebuje min. ${f1(sk)} kW`
+    : a < sk ? `za mało na start — Tesla potrzebuje min. ${f1(sk)} kW`
     : `${amps} A · ok. ${Math.round(p * EFF * KM_PER_KWH)} km zasięgu na godzinę` + (S.battFirst && L.battSoc != null && L.battSoc < 99 ? ' · po magazynie' : '');
 
-  $('socPct').textContent = Math.round(L.tSoc) + '%';
-  $('socBar').style.width = clamp(L.tSoc, 0, 100) + '%';
+  const carKnown = !live || !!L.tTs;
+  $('socPct').textContent = carKnown ? Math.round(L.tSoc) + '%' : '—';
+  $('socBar').style.width = (carKnown ? clamp(L.tSoc, 0, 100) : 0) + '%';
   $('tgtMark').style.left = 'calc(' + S.target + '% - 1px)';
   $('targetPct').textContent = S.target;
-  $('rangeV').textContent = Math.round(L.tRange) + ' km';
-  const need = Math.max(0, S.target - L.tSoc);
-  $('toTarget').textContent = need <= 0 ? '✓' : '+' + Math.round(need * KM_PER_PCT) + ' km';
-  const charging = L.tState === 'Charging';
+  $('rangeV').textContent = carKnown ? Math.round(L.tRange) + ' km' : '—';
+  const need = carKnown ? Math.max(0, S.target - L.tSoc) : NaN;
+  $('toTarget').textContent = !carKnown ? '—' : need <= 0 ? '✓' : '+' + Math.round(need * KM_PER_PCT) + ' km';
+  const charging = isCharging();
   $('chgKw').textContent = charging ? kw(L.tKw) : '—';
   const pw = charging && L.tKw > 0 ? L.tKw : (a >= sk ? p : 0);
-  $('eta').textContent = need <= 0 ? 'gotowe' : pw > 0.5 ? hm(need / 100 * BATT_KWH / EFF / pw) : '—';
+  $('eta').textContent = !carKnown ? '—' : need <= 0 ? 'gotowe' : pw > 0.5 ? hm(need / 100 * BATT_KWH / EFF / pw) : '—';
   const bd = $('teslaBadge');
-  if (charging) { bd.textContent = 'ŁADUJE ⚡'; bd.className = 'badge c'; }
+  if (!carKnown) { bd.textContent = 'BRAK DANYCH'; bd.className = 'badge'; }
+  else if (charging) { bd.textContent = L.tState === 'Starting' ? 'START…' : 'ŁADUJE ⚡'; bd.className = 'badge c'; }
   else if (!L.plugged) { bd.textContent = 'NIEPODŁĄCZONY'; bd.className = 'badge d'; }
   else if (L.tState === 'Complete') { bd.textContent = 'NAŁADOWANY'; bd.className = 'badge c'; }
   else { bd.textContent = 'ZAPARKOWANY'; bd.className = 'badge'; }
@@ -649,15 +683,16 @@ function render() {
 }
 
 function renderRec(a) {
-  const charging = L.tState === 'Charging', need = S.target - L.tSoc, sk = startKw();
+  const charging = isCharging(), sk = startKw(), carKnown = S.mode === 'sim' || !!L.tTs;
+  const need = carKnown ? S.target - L.tSoc : 1;
   let cls, ic, head, body, bcls, btxt, act;
   if (S.mode === 'live' && !L.ts) {
     cls = ''; ic = '⏳'; head = 'Czekam na dane'; body = 'Tryb LIVE pobiera moce z Solarman i stan Tesli. Jeśli nic się nie pojawia, sprawdź Ustawienia.';
     bcls = 'k'; btxt = 'Przejdź do ustawień'; act = 'settings';
-  } else if (!L.plugged) {
+  } else if (carKnown && !L.plugged) {
     cls = ''; ic = '🔌'; head = 'Auto niepodłączone'; body = 'Podłącz kabel, a aplikacja podpowie najlepszy moment na ładowanie.';
     bcls = 'k'; btxt = '↻ Odśwież'; act = 'refresh';
-  } else if (need <= 0 && !charging) {
+  } else if (carKnown && need <= 0 && !charging) {
     cls = 'g'; ic = '✅'; head = `Cel ${S.target}% osiągnięty`; body = `Bateria ma ${Math.round(L.tSoc)}%. Nadwyżkę PV weźmie dom i magazyn.`;
     bcls = 'k'; btxt = 'Zmień cel'; act = 'settings';
   } else if (charging) {
@@ -669,8 +704,10 @@ function renderRec(a) {
   } else if (a >= sk) {
     const amps = clamp(Math.floor(a / KW_PER_A), 5, S.maxAmps);
     cls = 'g'; ic = '🟢'; head = 'Ładuj teraz — za darmo ze słońca';
-    body = `Nadwyżka ${f1(a)} kW wystarczy na <b>${amps} A</b> (${f1(amps * KW_PER_A)} kW) → ok. <b>${Math.round(amps * KW_PER_A * EFF * KM_PER_KWH)} km</b> na godzinę. Do celu ${S.target}% brakuje ${Math.round(need * KM_PER_PCT)} km.`;
-    bcls = 'g'; btxt = `⚡ Start ładowania (${amps} A)`; act = 'start';
+    body = `Nadwyżka ${f1(a)} kW wystarczy na <b>${amps} A</b> (${f1(amps * KW_PER_A)} kW) → ok. <b>${Math.round(amps * KW_PER_A * EFF * KM_PER_KWH)} km</b> na godzinę.` +
+      (carKnown ? ` Do celu ${S.target}% brakuje ${Math.round(need * KM_PER_PCT)} km.` : ' Stan Tesli nieznany.');
+    if (carKnown) { bcls = 'g'; btxt = `⚡ Start ładowania (${amps} A)`; act = 'start'; }
+    else { bcls = 'k'; btxt = 'Połącz Teslę w ustawieniach'; act = 'settings'; }
   } else {
     const w = nextWindow();
     if (w) {
@@ -680,7 +717,7 @@ function renderRec(a) {
     } else {
       cls = 'b'; ic = '🔵'; head = 'Brak nadwyżki w prognozie';
       body = `Dziś i jutro prognoza nie daje nadwyżki ≥ ${f1(sk)} kW przy średnim zużyciu domu ${f1(S.homeAvg)} kW.`;
-      bcls = 'b'; btxt = '🌐 Ładuj z sieci mimo to'; act = 'grid';
+      bcls = 'b'; btxt = '🌐 Ładuj mimo to (sieć lub magazyn)'; act = carKnown ? 'grid' : 'settings';
     }
   }
   $('rec').className = 'rec ' + cls; $('recIco').textContent = ic; $('recH').textContent = head; $('recBody').innerHTML = body;
@@ -747,7 +784,7 @@ function fillSettings() {
   $('iPeak').value = S.pvPeak; $('iHome').value = S.homeAvg; $('iLat').value = S.lat; $('iLon').value = S.lon;
   $('sUrl').value = S.solar.url; $('sAppId').value = S.solar.appId; $('sSecret').value = S.solar.appSecret;
   $('sEmail').value = S.solar.email; $('sStation').value = S.solar.stationId;
-  $('sPass').value = ''; $('sPass').placeholder = S.solar.pwHash ? 'zapisane (SHA-256) — wpisz, by zmienić' : '';
+  $('sPass').value = ''; $('sPass').placeholder = S.solar.pwHash ? 'zapisane — wpisz, by zmienić' : '';
   $('tUrl').value = S.tesla.url; $('tToken').value = S.tesla.token; $('tVin').value = S.tesla.vin;
   $('autoMode').checked = S.auto;
   updNotifBtn();
@@ -811,7 +848,7 @@ $('saveSolar').addEventListener('click', async () => {
   const pw = $('sPass').value;
   if (pw) {
     if (!window.crypto || !crypto.subtle) { toast('Ta strona musi być otwarta przez https'); return; }
-    s.pwHash = await sha256(pw); $('sPass').value = ''; $('sPass').placeholder = 'zapisane (SHA-256) — wpisz, by zmienić';
+    s.pwHash = await sha256(pw); $('sPass').value = ''; $('sPass').placeholder = 'zapisane — wpisz, by zmienić';
   }
   smTok = null; save();
   if (!s.appId || !s.appSecret || !s.email || !s.pwHash) { toast('⚠️ Uzupełnij App ID, App Secret, e-mail i hasło'); return; }
