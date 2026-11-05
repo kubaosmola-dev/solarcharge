@@ -1,52 +1,79 @@
-const CACHE = 'solarcharge-v1';
-const ASSETS = ['/', '/index.html', '/manifest.json'];
-sw.jsself.addEventListener('install', e => {
+// SolarCharge service worker — ścieżki liczone względem zakresu (scope),
+// więc działa zarówno pod /solarcharge/ na GitHub Pages, jak i lokalnie.
+const CACHE = 'solarcharge-v2';
+const SCOPE = self.registration.scope;
+const url = p => new URL(p, SCOPE).href;
+const ASSETS = ['./', './index.html', './manifest.json', './icons/icon-192.png', './icons/icon-512.png', './icons/apple-touch-icon.png'].map(url);
+
+self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)));
   self.skipWaiting();
 });
 
 self.addEventListener('activate', e => {
-  e.waitUntil(caches.keys().then(keys =>
-    Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))
-  ));
-  self.clients.claim();
+  e.waitUntil(
+    caches.keys()
+      .then(keys => Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k))))
+      .then(() => self.clients.claim())
+  );
 });
 
 self.addEventListener('fetch', e => {
+  const req = e.request;
+  if (req.method !== 'GET') return;                       // zapytania API (POST) idą prosto do sieci
+  if (new URL(req.url).origin !== self.location.origin) return; // Solarman, Tesla, prognoza, fonty — bez cache
+
+  if (req.mode === 'navigate') {
+    // strona: najpierw sieć (żeby łapać aktualizacje), offline z cache
+    e.respondWith(
+      fetch(req)
+        .then(res => {
+          if (res.ok) caches.open(CACHE).then(c => c.put(url('./index.html'), res.clone()));
+          return res;
+        })
+        .catch(() => caches.match(url('./index.html')).then(r => r || caches.match(url('./'))))
+    );
+    return;
+  }
+
+  // pozostałe pliki: cache, a w tle odświeżenie
   e.respondWith(
-    caches.match(e.request).then(cached => cached || fetch(e.request).catch(() => caches.match('/index.html')))
+    caches.match(req).then(cached => {
+      const net = fetch(req)
+        .then(res => {
+          if (res.ok) caches.open(CACHE).then(c => c.put(req, res.clone()));
+          return res;
+        })
+        .catch(() => cached);
+      return cached || net;
+    })
   );
 });
 
 self.addEventListener('push', e => {
-  const data = e.data ? e.data.json() : { title: 'SolarCharge', body: 'Status ladowania' };
+  let data = { title: 'SolarCharge', body: 'Status ładowania' };
+  try { if (e.data) data = Object.assign(data, e.data.json()); } catch (_) {}
   e.waitUntil(
     self.registration.showNotification(data.title, {
       body: data.body,
-      icon: '/icons/icon-192.png',
+      icon: url('icons/icon-192.png'),
+      badge: url('icons/icon-192.png'),
       tag: 'solar-alert',
       renotify: true,
-      data: { url: '/?action=charge' }
+      data: { url: url('./?action=charge') }
     })
   );
 });
 
 self.addEventListener('notificationclick', e => {
   e.notification.close();
-  if (e.action === 'charge') e.waitUntil(clients.openWindow('/?action=charge'));
+  const target = (e.notification.data && e.notification.data.url) || SCOPE;
+  e.waitUntil(
+    self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(list => {
+      for (const c of list) {
+        if (c.url.startsWith(SCOPE) && 'focus' in c) { c.navigate(target).catch(() => {}); return c.focus(); }
+      }
+      return self.clients.openWindow(target);
+    })
+  );
 });
-
-self.addEventListener('periodicsync', e => {
-  if (e.tag === 'solar-check') e.waitUntil(checkSolarSurplus());
-});
-
-async function checkSolarSurplus() {
-  const surplus = Math.random() * 5;
-  if (surplus > 1.5) {
-    self.registration.showNotification('SolarCharge - laduj teraz!', {
-      body: 'Nadwyzka ' + surplus.toFixed(1) + ' kW!',
-      icon: '/icons/icon-192.png',
-      tag: 'solar-alert'
-    });
-  }
-}

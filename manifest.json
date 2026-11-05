@@ -1,15 +1,28 @@
 {
-    "name": "SolarCharge",
-        "short_name": "SolarCharge",
-        "description": "Zarządzanie ładowaniem Tesli z energii słonecznej",
-        "start_url": "/",
-        "display": "standalone",
-        "orientation": "portrait",
-        "background_color": "#0a0f0a",
-        "theme_color": "#39ff7a",
-        "lang": "pl",
-        "icons": [
-      { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
-      { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
-        ]
+  "id": "./",
+  "name": "SolarCharge",
+  "short_name": "SolarCharge",
+  "description": "Ładowanie Tesli z nadwyżki fotowoltaiki",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0a0f0a",
+  "theme_color": "#0a0f0a",
+  "lang": "pl",
+  "categories": ["utilities", "productivity"],
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    {
+      "name": "Ładuj teraz",
+      "short_name": "Ładuj",
+      "description": "Otwórz rekomendację ładowania",
+      "url": "./?action=charge",
+      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }]
+    }
+  ]
 }
